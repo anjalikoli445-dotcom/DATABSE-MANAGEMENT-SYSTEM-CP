@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bharat Yatra — Personalised India Travel Planner</title>
+<link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav>
+    <div class="brand" onclick="showSection('home')">
+    <img src="/static/logo.svg" alt="Bharat Yatra logo" class="logo-img">
+    <span class="logo-text">Bharat Yatra</span>
+</div>
+    <div class="links">
+        <a href="#" onclick="showSection('home')" id="nav-home">Home</a>
+        <a href="#" onclick="showSection('dashboard')" id="nav-dash" class="hidden">Plan Trip</a>
+        <a href="#" onclick="showSection('trips')" id="nav-trips" class="hidden">My Trips</a>
+        <a href="#" onclick="showSection('admin')" id="nav-admin" class="hidden">Admin</a>
+        <span id="nav-user" class="user hidden"></span>
+        <button id="nav-auth-btn" onclick="handleAuthClick()" class="btn small">Login</button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- ============ HOME ============ -->
+    <section id="section-home" class="section active">
+        <div class="hero">
+    <!-- Rotating background images -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1600&q=80')"></div> <!-- Taj Mahal -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1566837497312-7be4a2118b3c?w=1600&q=80')"></div> <!-- Dal Lake Kashmir -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1600&q=80')"></div> <!-- Kerala Backwaters -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1600&q=80')"></div> <!-- Jaipur Hawa Mahal -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1600&q=80')"></div> <!-- Goa Beach -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1600&q=80')"></div> <!-- Mumbai Gateway -->
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1609920658906-8223bd289001?w=1600&q=80')"></div> <!-- Hampi Karnataka -->
+
+    <h1>Bharat Yatra — explore India, thoughtfully.</h1>
+<p>From the Taj Mahal to Kerala's backwaters — plan personalised journeys across Incredible India.</p>
+       <button class="btn" onclick="showSection('auth-register')">Get Started</button>
+</div>
+
+<h2>Explore Destinations</h2>
+<div id="home-destinations" class="grid"></div>
+</section>
+
+    <!-- ============ LOGIN ============ -->
+    <section id="section-auth-login" class="section">
+        <h2>Login</h2>
+        <form class="form" onsubmit="doLogin(event)">
+            <label>Email <input type="email" id="login-email" required></label>
+            <label>Password <input type="password" id="login-password" required></label>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <p>No account? <a href="#" onclick="showSection('auth-register')">Register</a></p>
+        
+    </section>
+
+    <!-- ============ REGISTER ============ -->
+    <section id="section-auth-register" class="section">
+        <h2>Create Account</h2>
+        <form class="form" onsubmit="doRegister(event)">
+            <label>Name <input type="text" id="reg-name" required></label>
+            <label>Email <input type="email" id="reg-email" required></label>
+            <label>Phone <input type="text" id="reg-phone"></label>
+            <label>Password <input type="password" id="reg-password" required></label>
+            <label>Preferred Mode
+                <select id="reg-mode">
+                    <option value="Budget">Budget</option>
+                    <option value="Moderate" selected>Moderate</option>
+                    <option value="Luxury">Luxury</option>
+                </select>
+            </label>
+            <button type="submit" class="btn">Register</button>
+        </form>
+        <p>Already have an account? <a href="#" onclick="showSection('auth-login')">Login</a></p>
+    </section>
+
+    <!-- ============ DASHBOARD (Plan Trip) ============ -->
+    <section id="section-dashboard" class="section">
+        <h2>Hello, <span id="welcome-name"></span> 👋</h2>
+        <p>Plan a new trip below.</p>
+
+        <form class="form" onsubmit="generatePlan(event)">
+            <label>Start Location
+                <input type="text" id="plan-start" placeholder="e.g. Pune" required>
+            </label>
+
+            <label>Destination
+                <select id="plan-destination" required onchange="loadPlaces()">
+                    <option value="">-- select --</option>
+                </select>
+            </label>
+
+            <label>Travel Style
+                <select id="plan-style" required>
+                    <option value="Budget">💰 Budget</option>
+                    <option value="Moderate" selected>⚖️ Moderate</option>
+                    <option value="Luxury">👑 Luxury</option>
+                </select>
+            </label>
+
+            <div id="places-box">
+                <h3>Places to Visit</h3>
+                <div id="places-list" class="places-list">Select a destination first.</div>
+            </div>
+
+            <button type="submit" class="btn">Generate Itinerary</button>
+        </form>
+    </section>
+
+    <!-- ============ ITINERARY PREVIEW ============ -->
+    <section id="section-itinerary" class="section">
+        <h2>Generated Itinerary</h2>
+        <div id="itinerary-summary"></div>
+        <div id="itinerary-table"></div>
+        <div style="margin-top:20px;">
+            <button class="btn" onclick="saveTrip()">💾 Save Trip</button>
+            <button class="btn secondary" onclick="showSection('dashboard')">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ TRIP DETAIL ============ -->
+    <section id="section-trip-detail" class="section">
+        <h2>Trip Details</h2>
+        <div id="trip-detail-body"></div>
+        <button class="btn secondary" onclick="showSection('trips')">Back to My Trips</button>
+    </section>
+
+    <!-- ============ MY TRIPS ============ -->
+    <section id="section-trips" class="section">
+        <h2>My Trips</h2>
+        <div id="trips-body"></div>
+    </section>
+
+    <!-- ============ ADMIN ============ -->
+    <section id="section-admin" class="section">
+        <h2>Admin Dashboard</h2>
+        <div id="admin-stats" class="stats"></div>
+
+        <h3>Add Destination</h3>
+        <form class="form inline" onsubmit="addDestination(event)">
+            <input type="text" id="ad-name" placeholder="Name" required>
+            <input type="text" id="ad-state" placeholder="State">
+            <input type="text" id="ad-country" placeholder="Country" value="India">
+            <input type="text" id="ad-desc" placeholder="Description">
+            <button class="btn small" type="submit">Add</button>
+        </form>
+
+        <h3>Add Place</h3>
+        <form class="form inline" onsubmit="addPlace(event)">
+            <input type="number" id="ap-dest" placeholder="Dest ID" required>
+            <input type="text" id="ap-name" placeholder="Place name" required>
+            <input type="text" id="ap-cat" placeholder="Category">
+            <input type="number" step="0.1" id="ap-rating" placeholder="Rating">
+            <input type="number" step="0.01" id="ap-fee" placeholder="Entry fee">
+            <input type="number" id="ap-dur" placeholder="Duration (min)">
+            <button class="btn small" type="submit">Add</button>
+        </form>
+
+        <h3>Add Route</h3>
+        <form class="form inline" onsubmit="addRoute(event)">
+            <input type="number" id="ar-src" placeholder="From place_id" required>
+            <input type="number" id="ar-dst" placeholder="To place_id" required>
+            <input type="number" id="ar-tid" placeholder="Transport ID" required>
+            <input type="number" step="0.1" id="ar-dist" placeholder="Distance">
+            <input type="number" id="ar-time" placeholder="Time (min)">
+            <input type="number" step="0.01" id="ar-cost" placeholder="Cost">
+            <select id="ar-comfort">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+            </select>
+            <button class="btn small" type="submit">Add</button>
+        </form>
+
+        <h3>Popular Places (View)</h3>
+        <div id="admin-popular"></div>
+    </section>
+
+</div>
+
+<div id="flash-container"></div>
+
+<!-- ============ DESTINATION MODAL (MAKEMYTRIP STYLE) ============ -->
+<div id="destination-modal" class="modal hidden">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">✖</button>
+        
+        <div id="modal-hero" class="modal-hero">
+            <h2 id="modal-title">Destination</h2>
+            <p id="modal-subtitle">State</p>
+        </div>
+
+        <div class="modal-body">
+            <h3>🏛️ Famous Tourist Places</h3>
+            <div id="modal-places" class="modal-grid"></div>
+
+            <h3>🚆 How to Reach</h3>
+            <div id="modal-travel" class="modal-grid"></div>
+
+            <h3>🏨 Hotels & Lodges <span id="user-style-badge" style="font-size:0.8rem; background:#e2e8f0; padding:4px 8px; border-radius:8px; color:#475569; margin-left:10px;"></span></h3>
+            <div id="modal-hotels" class="modal-grid"></div>
+
+            <h3>🍽️ Restaurants & Famous Sweets</h3>
+            <div id="modal-food" class="modal-grid"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
