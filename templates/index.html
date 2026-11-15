@@ -6,14 +6,33 @@
 <title>Bharat Yatra — Personalised India Travel Planner</title>
 <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
 <link rel="stylesheet" href="/static/style.css">
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet Routing Machine CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+<style>
+    /* Force map to be full width and proper height */
+    #map {
+        height: 450px;
+        width: 100%;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        z-index: 1;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    /* Hide the bulky text directions box that comes with the routing machine */
+    .leaflet-routing-container {
+        display: none !important;
+    }
+</style>
 </head>
 <body>
 
 <nav>
     <div class="brand" onclick="showSection('home')">
-    <img src="/static/logo.svg" alt="Bharat Yatra logo" class="logo-img">
-    <span class="logo-text">Bharat Yatra</span>
-</div>
+        <img src="/static/logo.svg" alt="Bharat Yatra logo" class="logo-img">
+        <span class="logo-text">Bharat Yatra</span>
+    </div>
     <div class="links">
         <a href="#" onclick="showSection('home')" id="nav-home">Home</a>
         <a href="#" onclick="showSection('dashboard')" id="nav-dash" class="hidden">Plan Trip</a>
@@ -29,23 +48,22 @@
     <!-- ============ HOME ============ -->
     <section id="section-home" class="section active">
         <div class="hero">
-    <!-- Rotating background images -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1600&q=80')"></div> <!-- Taj Mahal -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1566837497312-7be4a2118b3c?w=1600&q=80')"></div> <!-- Dal Lake Kashmir -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1600&q=80')"></div> <!-- Kerala Backwaters -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1600&q=80')"></div> <!-- Jaipur Hawa Mahal -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1600&q=80')"></div> <!-- Goa Beach -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1600&q=80')"></div> <!-- Mumbai Gateway -->
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1609920658906-8223bd289001?w=1600&q=80')"></div> <!-- Hampi Karnataka -->
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1566837497312-7be4a2118b3c?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1600&q=80')"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1609920658906-8223bd289001?w=1600&q=80')"></div>
 
-    <h1>Bharat Yatra — explore India, thoughtfully.</h1>
-<p>From the Taj Mahal to Kerala's backwaters — plan personalised journeys across Incredible India.</p>
-       <button class="btn" onclick="showSection('auth-register')">Get Started</button>
-</div>
+            <h1>Bharat Yatra — explore India, thoughtfully.</h1>
+            <p>Discover the colours of Incredible India — from the Taj Mahal to Kerala's backwaters.</p>
+            <button class="btn" onclick="showSection('auth-register')">Get Started</button>
+        </div>
 
-<h2>Explore Destinations</h2>
-<div id="home-destinations" class="grid"></div>
-</section>
+        <h2>Explore Destinations</h2>
+        <div id="home-destinations" class="grid"></div>
+    </section>
 
     <!-- ============ LOGIN ============ -->
     <section id="section-auth-login" class="section">
@@ -56,7 +74,6 @@
             <button type="submit" class="btn">Login</button>
         </form>
         <p>No account? <a href="#" onclick="showSection('auth-register')">Register</a></p>
-        
     </section>
 
     <!-- ============ REGISTER ============ -->
@@ -79,7 +96,7 @@
         <p>Already have an account? <a href="#" onclick="showSection('auth-login')">Login</a></p>
     </section>
 
-    <!-- ============ DASHBOARD (Plan Trip) ============ -->
+    <!-- ============ DASHBOARD ============ -->
     <section id="section-dashboard" class="section">
         <h2>Hello, <span id="welcome-name"></span> 👋</h2>
         <p>Plan a new trip below.</p>
@@ -88,13 +105,11 @@
             <label>Start Location
                 <input type="text" id="plan-start" placeholder="e.g. Pune" required>
             </label>
-
             <label>Destination
                 <select id="plan-destination" required onchange="loadPlaces()">
                     <option value="">-- select --</option>
                 </select>
             </label>
-
             <label>Travel Style
                 <select id="plan-style" required>
                     <option value="Budget">💰 Budget</option>
@@ -102,19 +117,21 @@
                     <option value="Luxury">👑 Luxury</option>
                 </select>
             </label>
-
             <div id="places-box">
                 <h3>Places to Visit</h3>
                 <div id="places-list" class="places-list">Select a destination first.</div>
             </div>
-
             <button type="submit" class="btn">Generate Itinerary</button>
         </form>
     </section>
 
-    <!-- ============ ITINERARY PREVIEW ============ -->
+    <!-- ============ ITINERARY PREVIEW (WITH MAP) ============ -->
     <section id="section-itinerary" class="section">
         <h2>Generated Itinerary</h2>
+        
+        <!-- MAP CONTAINER -->
+        <div id="map"></div>
+
         <div id="itinerary-summary"></div>
         <div id="itinerary-table"></div>
         <div style="margin-top:20px;">
@@ -183,8 +200,6 @@
 
 </div>
 
-<div id="flash-container"></div>
-
 <!-- ============ DESTINATION MODAL (MAKEMYTRIP STYLE) ============ -->
 <div id="destination-modal" class="modal hidden">
     <div class="modal-content">
@@ -211,6 +226,12 @@
     </div>
 </div>
 
+<div id="flash-container"></div>
+
+<!-- Leaflet Map JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet Routing Machine JS -->
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 <script src="/static/script.js"></script>
 </body>
 </html>
